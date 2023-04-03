@@ -16,10 +16,6 @@ public class Order
     public int Quantity { get; set; }
     [Required]
     public OrderStatus Status { get; set; }
-    [ForeignKey("CustomerId")]
-    public Customer Customer { get; set; }
-    [ForeignKey("ProductId")]
-    public Product Product { get; set; }
 }
 
 public enum OrderStatus

@@ -34,18 +34,19 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Order order)
+    public async Task<Order> Post(Order order)
     {
         var findOrder = await context.Orders.FirstOrDefaultAsync(o => o.Id == order.Id);
         if (findOrder == null)
         {
             findOrder = new Order
             {
+                CustomerId = order.CustomerId,
                 ProductId = order.ProductId,
                 Quantity = order.Quantity,
                 Status = OrderStatus.Cart
             };
-            context.Orders.Add(findOrder);
+            await context.Orders.AddAsync(findOrder);
         }
         else
         {
@@ -54,7 +55,8 @@ public class OrderController : ControllerBase
         }
 
         await context.SaveChangesAsync();
-        return Ok();
+        await context.Entry(findOrder).ReloadAsync();
+        return findOrder;
     }
 
     [HttpDelete("{id}")]

@@ -36,15 +36,15 @@ public class ProductController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, Product product)
     {
-        if (id != product.Id)
+        if (product == null)
         {
             return BadRequest();
         }
 
-        context.Products.Update(product);
-
         try
         {
+            product.Id = id;
+            context.Products.Update(product);
             await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
@@ -55,19 +55,21 @@ public class ProductController : ControllerBase
             }
         }
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost]
     public async Task<ActionResult<Product>> Post(Product product)
     {
-        context.Products.Add(product);
+        if (product == null)
+        {
+            return BadRequest();
+        }
+        var added = await context.Products.AddAsync(product);
         await context.SaveChangesAsync();
-
-        // 重新載入該物件以取得完整資料
-        await context.Entry(product).ReloadAsync();
-
-        return product;
+        // 重新載入該物件方法
+        // await context.Entry(product).ReloadAsync();
+        return added.Entity;
     }
 
     [HttpDelete("{id}")]
@@ -82,6 +84,6 @@ public class ProductController : ControllerBase
         context.Products.Remove(product);
         await context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok();
     }
 }

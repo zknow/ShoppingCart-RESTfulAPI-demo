@@ -9,9 +9,7 @@ public class DbCtx : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<Customer> Customers { get; set; }
 
-    public DbCtx(DbContextOptions<DbCtx> options) : base(options)
-    {
-    }
+    public DbCtx(DbContextOptions<DbCtx> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

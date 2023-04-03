@@ -1,6 +1,5 @@
 using ShoppingCart.DB;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
 
 internal class Program
 {
@@ -16,7 +15,16 @@ internal class Program
         builder.Services.AddControllers();
 
         var connectionString = config.GetConnectionString("DefaultConnection");
-        builder.Services.AddDbContext<DbCtx>(options => options.UseSqlServer(connectionString));
+        builder.Services.AddDbContext<DbCtx>(options =>
+            options.UseSqlServer(connectionString, sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
+            })
+            .AddInterceptors(new DbInterceptor())); //加入自訂的 DbCommandInterceptor 以實現重連機制
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 

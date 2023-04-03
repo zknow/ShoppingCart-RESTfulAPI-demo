@@ -40,7 +40,7 @@ public class CustomerController : ControllerBase
         return customer;
     }
 
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, Customer customer)
     {
         if (id != customer.Id)
@@ -61,19 +61,17 @@ public class CustomerController : ControllerBase
             }
         }
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost]
-    public async Task<ActionResult<Customer>> Post(Customer customer)
+    public async Task<Customer> Post(Customer customer)
     {
-        context.Customers.Add(customer);
+        var added = await context.Customers.AddAsync(customer);
         await context.SaveChangesAsync();
-
-        // 重新載入該物件以取得完整資料
-        await context.Entry(customer).ReloadAsync();
-
-        return customer;
+        // 重新載入該物件方法
+        // await context.Entry(customer).ReloadAsync();
+        return added.Entity;
     }
 
     [HttpDelete("{id}")]
@@ -88,6 +86,6 @@ public class CustomerController : ControllerBase
         context.Customers.Remove(customer);
         await context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok();
     }
 }
