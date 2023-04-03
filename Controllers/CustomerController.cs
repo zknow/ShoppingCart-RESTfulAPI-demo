@@ -48,10 +48,9 @@ public class CustomerController : ControllerBase
             return BadRequest();
         }
 
-        context.Entry(customer).State = EntityState.Modified;
-
         try
         {
+            context.Customers.Update(customer);
             await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)

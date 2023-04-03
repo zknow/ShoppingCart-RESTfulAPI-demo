@@ -41,7 +41,7 @@ public class ProductController : ControllerBase
             return BadRequest();
         }
 
-        context.Entry(product).State = EntityState.Modified;
+        context.Products.Update(product);
 
         try
         {

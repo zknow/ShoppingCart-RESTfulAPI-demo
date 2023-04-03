@@ -50,7 +50,7 @@ public class OrderController : ControllerBase
         else
         {
             findOrder.Quantity += order.Quantity;
-            context.Entry(findOrder).State = EntityState.Modified;
+            context.Orders.Update(findOrder);
         }
 
         await context.SaveChangesAsync();
@@ -85,13 +85,13 @@ public class OrderController : ControllerBase
         foreach (var order in carts)
         {
             order.Status = OrderStatus.Completed;
-            context.Entry(order).State = EntityState.Modified;
+            context.Orders.Update(order);
 
             var product = await context.Products.FindAsync(order.ProductId);
             if (product != null)
             {
                 product.Quantity -= order.Quantity;
-                context.Entry(product).State = EntityState.Modified;
+                context.Products.Update(product);
             }
         }
 
